@@ -3,6 +3,7 @@ library(pROC)
 library(DMwR)
 
 # Determine which methods/formula to use
+formula<-Class ~ age+ HR + SPO2_perc+ SPO2_R+ SD_HR+ SD_SPO2_perc+ SD_SPO2_R+ HR_SPO2+ COSEn+ LDS+ Density_Score+ BP_S+ BP_D+ BP_M
 useSMOTE<-T
 
 # Read in the data and set up train/test sets
@@ -18,13 +19,14 @@ attach(trainset)
 
 # Apply preprocessing methods
 if(useSMOTE) {
-  trainset <- 
+  trainset$Class <- as.factor(trainset$Class)
+  trainset <- SMOTE(Class ~ ., trainset)
+  attach(trainset)
 }
 
 
 # Build the logistic regression model and calculate ROC curve
-optimal<-lrm(Class ~ age+ HR + SPO2_perc+ SPO2_R+ SD_HR+ SD_SPO2_perc+ SD_SPO2_R+ HR_SPO2+ COSEn+ LDS+ Density_Score+ BP_S+ BP_D+ BP_M,
-          y=T,x=T)
+optimal<-lrm(formula,y=T,x=T)
 optimal<-robcov(optimal,cluster=id)
 print(optimal)
 prob=predict(optimal,type=c("lp"),testset)
