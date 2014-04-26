@@ -13,7 +13,8 @@ testset <- data[(splitIndex+1):nrow(data),]
 attach(trainset)
 
 # Build the logistic regression model and calculate ROC curve
-optimal<-lrm(Class~HR+BP_S+BP_M+BP_D+LDS,y=T,x=T)
+optimal<-lrm(Class ~ age+ HR + SPO2_perc+ SPO2_R+ SD_HR+ SD_SPO2_perc+ SD_SPO2_R+ HR_SPO2+ COSEn+ LDS+ Density_Score+ BP_S+ BP_D+ BP_M,
+          y=T,x=T)
 optimal<-robcov(optimal,cluster=id)
 print(optimal)
 prob=predict(optimal,type=c("lp"),testset)
