@@ -15,17 +15,13 @@ for(i in 2:(countAttr)) {
   attrData = attrData[order(attrData[,1]), ]
   
   # Calculate data points
-  x = list()
-  y = list()
   coords = list()
   for(j in 5:95) {
     dataRangeMin = trunc(nrow(attrData)*(j-5)/100)
     dataRangeMax = trunc(nrow(attrData)*(j+5)/100)
-    countRare <- count(attrData[dataRangeMin:dataRangeMax,], c("Class"))[,c("freq")][2]
-    x[length(x)+1] = as.numeric(j)
-    y[length(y)+1] = (countRare/(nrow(attrData)))/dataSetRisk
+    countRare <- nrow(subset(attrData[dataRangeMin:dataRangeMax,], Class==1))
     coords[length(coords) + 1] = as.numeric(j)
-    coords[length(coords) + 1] = (countRare/(nrow(attrData)))/dataSetRisk
+    coords[length(coords) + 1] = (countRare/(dataRangeMax - dataRangeMin + 1))/dataSetRisk
   }
   plotPoints = data.frame(matrix(coords, ncol = 2, byrow = TRUE))
   names(plotPoints) = c("Data Point Percentile", "Relative Risk")
