@@ -9,7 +9,7 @@ dataSetRisk = (count(data, c("Class"))[,c("freq")][2])/nrow(data)
 
 # Loop through the attributes
 countAttr = ncol(data)-2
-for(i in 2:(countAttr)) {
+for(i in 1:(countAttr)) {
   # Get data frame with just the desired attribute
   attrData = data[,c(i+1, ncol(data))]
   attrData = attrData[order(attrData[,1]), ]
