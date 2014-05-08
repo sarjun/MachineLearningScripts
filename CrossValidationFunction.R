@@ -60,9 +60,9 @@ rmCrossValidation <- function(data, folds = 10) {
   
   returnValue = list()
   for(i in 1:folds) {
-    returnValue[[i]] = list()
-    returnValue[[i]][0] = subset(data, !(id %in% foldHolder[[i]]))
-    returnValue[[i]][1] = subset(data, id %in% foldHolder[[i]])
+    dfTr = subset(data, !(id %in% foldHolder[[i]]))
+    dfTe = subset(data, id %in% foldHolder[[i]])
+    returnValue[[i]] = list(dfTr, dfTe)
   }
   
   return(returnValue)
