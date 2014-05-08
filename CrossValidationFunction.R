@@ -1,4 +1,8 @@
-rmCrossValidation <- function(data, cluster, class, folds = 10, evaluate) {
+# Later we want to add a cluster string parameter to use wherever "id" is used
+# Also a Class parameter
+# Maybe also pass in an evaluate function that will do the evaluation
+rmCrossValidation <- function(data, folds = 10) {
+  # First divide the data set into 
   sum0 = nrow(subset(data, Class == 0))
   sum1 = nrow(subset(data, Class == 1))
   class0List = subset(count(data, c("Class", "id")), Class==0)
@@ -53,4 +57,13 @@ rmCrossValidation <- function(data, cluster, class, folds = 10, evaluate) {
     foldHolder[[foldIndex]][length(foldHolder[[foldIndex]]) + 1] = class0List[i, "id"]
     obsCount[foldIndex] = obsCount[[foldIndex]] + class0List[i, "freq"]
   }
+  
+  returnValue = list()
+  for(i in 1:folds) {
+    returnValue[[i]] = list()
+    returnValue[[i]][0] = subset(data, !(id %in% foldHolder[[i]]))
+    returnValue[[i]][1] = subset(data, id %in% foldHolder[[i]])
+  }
+  
+  return(returnValue)
 }
