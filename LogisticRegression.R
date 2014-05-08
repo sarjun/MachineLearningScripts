@@ -5,9 +5,9 @@ library(plyr)
 
 # Determine which methods/formula to use
 formula<-Class ~ age+ HR + SPO2_perc+ SPO2_R+ SD_HR+ SD_SPO2_perc+ SD_SPO2_R+ HR_SPO2+ COSEn+ LDS+ Density_Score+ BP_S+ BP_D+ BP_M
-useSMOTE<-T
+useSMOTE<-F
 useKnnImpute<-F
-omitRowsWithMissingVals<-T
+omitRowsWithMissingVals<-F
 
 # Read in the data and set up train/test sets
 data<-read.table("C:/Users/Arjun/Documents/UVa/Sixth Semester/CS 6316/ResearchProject/DataSet2.csv",header=T,sep=",")
