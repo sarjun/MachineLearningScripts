@@ -11,7 +11,9 @@ omitRowsWithMissingVals<-F
 
 # Read in the data and set up train/test sets
 folds = 10
-data = read.table("C:/Users/Arjun/Documents/UVa/Sixth Semester/CS 6316/ResearchProject/DataSet2.csv",header=T,sep=",")
+
+data<-read.table("../DataSet2.csv",header=T,sep=",")
+
 cvFolds = rmCrossValidation(data, folds)
 
 # Apply preprocessing methods
@@ -20,6 +22,7 @@ cvFolds = rmCrossValidation(data, folds)
 rocAvg = 0
 sensitivityList = list()
 specificityList = list()
+colors = rainbow(folds)
 for(i in 1:folds) {
   testset = cvFolds[[i]][[2]]
   attach(cvFolds[[i]][[1]])
@@ -32,10 +35,10 @@ for(i in 1:folds) {
   sensitivityList[[i]] = ROC["sensitivities"]
   specificityList[[i]] = ROC["specificities"]
   if(i==1) {
-    plot(ROC)
+    plot(ROC, col=colors[i])
   }
   if(i>1) {
-    plot(ROC, add=TRUE)
+    plot(ROC, add=TRUE, col=colors[i])
   }
 }
 
