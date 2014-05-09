@@ -18,7 +18,7 @@ rmCrossValidation <- function(data, folds = 10) {
   for(i in 1:(nrow(class1List))) {
     foldIndex = 1
     assigned = T
-    while(obsCount[[foldIndex]] + class1List[i, "freq"] > ceil(sum1/10)) {
+    while(obsCount[[foldIndex]] + class1List[i, "freq"] > ceil(sum1/folds)) {
       foldIndex = foldIndex + 1
       if(foldIndex > folds) {
         assigned = F
@@ -42,7 +42,7 @@ rmCrossValidation <- function(data, folds = 10) {
   for(i in 1:(nrow(class0List))) {
     foldIndex = 1
     assigned = T
-    while(obsCount[[foldIndex]] + class0List[i, "freq"] > ceil(nrow(data)/10)) {
+    while(obsCount[[foldIndex]] + class0List[i, "freq"] > ceil(nrow(data)/folds)) {
       foldIndex = foldIndex + 1
       if(foldIndex > folds) {
         assigned = F
