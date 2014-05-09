@@ -1,19 +1,41 @@
-library(C50)
-intub<-read.table("anontfmodel2_R_grouped.csv",header=T,fill =T,sep=",")
-training <- intub[1:246509,]
-testing <- intub[246510:372527,]
-attach(training)
-
-x <- training[, c("age", "HR", "SPO2_perc", "SPO2_R", "SD_HR", "SD_SPO2_perc", "SD_SPO2_R", "HR_SPO2", "COSEn", "LDS", "Density_Score", "BP_S", "BP_D", "BP_M")]
-y <- factor(training[,"Class"])
-full<-C5.0(x, y, rule=F, control = C5.0Control(CF = 0.25, winnow=F))
-
-print(full)
-testset <- testing[, c("age", "HR", "SPO2_perc", "SPO2_R", "SD_HR", "SD_SPO2_perc", "SD_SPO2_R", "HR_SPO2", "COSEn", "LDS", "Density_Score", "BP_S", "BP_D", "BP_M")]
-# attach(testing)
-prob=predict.C5.0(full, newdata = testset, type=c("prob"), trials = 1)
-testing$probA = prob[,"0"]
-testing$probB = prob[,"1"]
 library(pROC)
-ROC <- roc(Class==1 ~ probA, data = testing)
-plot(ROC)
+library(C50)
+# data<-read.table("anontfmodel2_R_grouped.csv",header=T,fill =T,sep=",")
+# training <- data[1:246509,]
+# testing <- data[246510:372527,]
+# attach(training)
+folds = 10
+data<-read.table("C:/Users/Arjun/Documents/UVa/Sixth Semester/CS 6316/ResearchProject/DataSet2.csv",header=T,sep=",")
+cvFolds = rmCrossValidation(data, folds)
+
+rocAvg = 0
+colors = rainbow(folds)
+for(i in 1:folds) {
+  testing = cvFolds[[i]][[2]]
+  training = cvFolds[[i]][[1]]
+  attach(training)
+  x <- training[, c("SD_SPO2_R", "SPO2_R", "HR", "BP_D", "BP_M", "BP_S", "Density_Score", "SD_HR")]
+  y <- factor(training[,"Class"])
+  full<-C5.0(x, y, rule=F, control = C5.0Control(CF = 0.25, winnow=F))
+
+  testset <- testing[, c("SD_SPO2_R", "SPO2_R", "HR", "BP_D", "BP_M", "BP_S", "Density_Score", "SD_HR")]
+  prob=predict.C5.0(full, newdata = testset, type=c("prob"), trials = 1)
+  testing$probA = prob[,"0"]
+  testing$probB = prob[,"1"]
+  ROC <- roc(Class==1 ~ probB, data = testing)
+  rocAvg = rocAvg + as.numeric(ROC["auc"])
+  if(i==1) {
+    plot(ROC, col=colors[i], main="C5.0 Decision Tree")
+  }
+  if(i>1 & i<folds) {
+    plot(ROC, add=TRUE, col=colors[i])
+  }
+  if(i==folds) {
+    png(filename="C:/Users/Arjun/Documents/UVa/Sixth Semester/CS 6316/ResearchProject/Final Project Results/Naive Bayes.png")
+    plot(ROC, add=TRUE, col=colors[i])
+    dev.off()
+  }
+}
+
+rocAvg = rocAvg / folds
+print(rocAvg)
