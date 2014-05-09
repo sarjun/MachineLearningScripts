@@ -27,13 +27,8 @@ for(i in 1:folds) {
   if(i==1) {
     plot(ROC, col=colors[i], main="C5.0 Decision Tree")
   }
-  if(i>1 & i<folds) {
+  if(i>1) {
     plot(ROC, add=TRUE, col=colors[i])
-  }
-  if(i==folds) {
-    png(filename="C:/Users/Arjun/Documents/UVa/Sixth Semester/CS 6316/ResearchProject/Final Project Results/Naive Bayes.png")
-    plot(ROC, add=TRUE, col=colors[i])
-    dev.off()
   }
 }
 

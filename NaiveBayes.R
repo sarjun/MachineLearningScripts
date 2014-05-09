@@ -16,16 +16,16 @@ for(i in 1:folds) {
   testset = cvFolds[[i]][[2]]
   trainset = cvFolds[[i]][[1]]
   attach(trainset)
-  TrainData <- trainset[,1:(ncol(trainset)-1)]
+  TrainData <- trainset[,c("age", "SPO2_R", "Density_Score", "SD_RESP", "HR", "LDS", "SD_SPO2_perc", "BP_M", "BP_D")]
   TrainClasses <- as.data.frame(trainset[,ncol(trainset)])
   names(TrainClasses) = c("id")
-  bayes <- naiveBayes(TrainData, TrainClasses, formula=formula)
+  bayes <- naiveBayes(TrainData, TrainClasses)
   prob=predict(bayes,type=c("raw"),testset)
   testset$prob = prob[,"1"]
   ROC <- roc(Class==1 ~ prob, data = testset)
   rocAvg = rocAvg + as.numeric(ROC["auc"])
   if(i==1) {
-    plot(ROC, col=colors[i])
+    plot(ROC, col=colors[i], main="Naive Bayes")
   }
   if(i>1) {
     plot(ROC, add=TRUE, col=colors[i])
