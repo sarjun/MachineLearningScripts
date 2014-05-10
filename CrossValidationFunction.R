@@ -1,3 +1,6 @@
+library(plyr)
+library(rms)
+
 # Later we want to add a cluster string parameter to use wherever "id" is used
 # Also a Class parameter
 # Maybe also pass in an evaluate function that will do the evaluation
