@@ -49,9 +49,9 @@ evaluatePhenotype = function(phenotype) {
   for(i in 1:folds) {
     testset = cvFolds[[i]][[2]]
     attach(cvFolds[[i]][[1]])
-    optimal = lrm(formula,data=cvFolds[[i]][[1]],y=T,x=T)
+    optimal = lrm(formula,y=T,x=T)
     optimal = robcov(optimal,cluster=id)
-    prob=predict(optimal,type=c("prob"),testset)
+    prob=predict(optimal,type=c("fitted"),testset)
     testset$prob = prob
     ROC = roc(Class==1 ~ prob, data = testset, auc=TRUE)
     rocAvg = rocAvg + as.numeric(ROC["auc"])
@@ -59,7 +59,25 @@ evaluatePhenotype = function(phenotype) {
   
   rocAvg = rocAvg / folds
   print(rocAvg)
+}
+
+handleColinearity = function(phenotype) {
+  for(i in 0:2) {
+    if(as.numeric(substr(phenotype, 18+i, 18+i)) + as.numeric(substr(phenotype, 29+i, 29+i)) == 2) {
+      first = sample(0:1, 1)
+      phenotype = paste(substr(phenotype, 1, 17+i), first, substr(phenotype, 19+i, 28+i), -1*first+1, substr(phenotype, 30+i, 31), sep="")
+    }
+  }
+
+  return(phenotype)
+}
+
+handleColinearityInGeneration = function(generation) {
+  for(i in 1:genCount) {
+    generation[i] = handleColinearity(generation[i])
+  }
   
+  return(generation)
 }
 
 evaluateGeneration = function(phenotypes) {
@@ -161,6 +179,7 @@ formNextGeneration = function(currGen) {
 
 currGen = readPhenotypes()
 for(x in 1:10) {
+  currGen = handleColinearityInGeneration(currGen)
   evaluateGeneration(currGen)
   writeArchive()
   currGen = formNextGeneration()
