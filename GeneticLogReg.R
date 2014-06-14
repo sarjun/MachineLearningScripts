@@ -8,13 +8,13 @@ phenotypesLoc = "C:/Users/Arjun/Documents/UVa/Sixth Semester/CS 6316/ResearchPro
 archiveDir = "C:/Users/Arjun/Documents/UVa/Sixth Semester/CS 6316/ResearchProject/GA/Archive/"
 dataLoc = "C:/Users/Arjun/Documents/UVa/Sixth Semester/CS 6316/ResearchProject/DataSet2.csv"
 
+# Set up cross validation function
+# source('MachineLearningScripts/CrossValidationFunction.R')
+
 # Read in the data and set up train/test sets
 folds = 10
 data<-read.table(dataLoc,header=T,sep=",")
 cvFolds = rmCrossValidation(data, folds)
-
-# Set up cross validation function
-# source('./CrossValidationFunction.R')
 
 # Helpers for cross validation
 attributeNames = colnames(data)[2:32]
@@ -64,8 +64,7 @@ evaluatePhenotype = function(phenotype) {
 handleColinearity = function(phenotype) {
   for(i in 0:2) {
     if(as.numeric(substr(phenotype, 18+i, 18+i)) + as.numeric(substr(phenotype, 29+i, 29+i)) == 2) {
-      first = sample(0:1, 1)
-      phenotype = paste(substr(phenotype, 1, 17+i), first, substr(phenotype, 19+i, 28+i), -1*first+1, substr(phenotype, 30+i, 31), sep="")
+      phenotype = paste(substr(phenotype, 1, 17+i), 0, substr(phenotype, 19+i, 28+i), 1, substr(phenotype, 30+i, 31), sep="")
     }
   }
 
@@ -73,17 +72,18 @@ handleColinearity = function(phenotype) {
 }
 
 handleColinearityInGeneration = function(generation) {
-  for(i in 1:genCount) {
-    generation[i] = handleColinearity(generation[i])
+  fixedGen = list()
+  for(i in 1:genSize) {
+    fixedGen[i] = handleColinearity(generation[i])
   }
   
-  return(generation)
+  return(fixedGen)
 }
 
 evaluateGeneration = function(phenotypes) {
   for(i in 1:length(phenotypes)) {
     phenRoc = evaluatePhenotype(phenotypes[i])
-    bestPhenotypes[length(phenotypes) + 1] = phenotypes[i]
+    bestPhenotypes[length(bestPhenotypes) + 1] = phenotypes[i]
     bestPhenRocs[length(bestPhenRocs) + 1] = phenRoc
   }
   
@@ -95,9 +95,9 @@ evaluateGeneration = function(phenotypes) {
 }
 
 writeArchive = function() {
-  archive = file(paste(archiveDir, "HallOfFame", genCount, ".txt", sep=""))
-  for(i in 1:genCount) {
-    writeLines(paste(paste(i, bestPhenRocs[i], sep=": "), bestPhenotypes[i], paste(attrsOfPhenotype(bestPhenotypes[i]), collapse=", "), sep=","), file=archive)
+  filename = paste(archiveDir, "HallOfFame", genCount, ".txt", sep="")
+  for(i in 1:genSize) {
+    write(paste(paste(i, bestPhenRocs[i], sep=": "), bestPhenotypes[i], paste(attrsOfPhenotype(bestPhenotypes[i]), collapse=", "), sep=","), file=filename, append=T)
   }
 }
 
@@ -107,8 +107,8 @@ generateSelectionProb = function() {
   currProb = 0
   selectionProbUpperBound = list()
   
-  for(i in 1:genCount) {
-    selectionProbUpperBound[length(selectionProbUpperBound) + 1] = scores[i]/scoreSum + currProb
+  for(i in 1:genSize) {
+    selectionProbUpperBound[i] = scores[i]/scoreSum + currProb
     currProb = currProb + scores[i]/scoreSum
   }
   
@@ -118,11 +118,11 @@ generateSelectionProb = function() {
 getParentIndex = function(selProb) {
   sel = runif(1, 0, 1)
   
-  for(i in 1:genCount) {
+  for(i in 1:genSize) {
     if(sel < selProb[i]) return(i)
   }
   
-  return(genCount)
+  return(genSize)
 }
 
 crossover = function(parents) {
@@ -157,12 +157,12 @@ mutateChildren = function(children) {
 }
 
 formNextGeneration = function(currGen) {
-  crossoverProbs = runif(genCount, 0, 1)
+  crossoverProbs = runif(genSize, 0, 1)
   nextGen = list()
   
   selectionProb = generateSelectionProb()
   
-  for(i in 1:(genCount/2)) {
+  for(i in 1:(genSize/2)) {
     parents = list()
     parents[1] = currGen[getParentIndex(selectionProb)]
     parents[2] = currGen[getParentIndex(selectionProb)]
@@ -182,5 +182,6 @@ for(x in 1:10) {
   currGen = handleColinearityInGeneration(currGen)
   evaluateGeneration(currGen)
   writeArchive()
-  currGen = formNextGeneration()
+  currGen = formNextGeneration(currGen)
+  genCount = genCount + 1
 }
