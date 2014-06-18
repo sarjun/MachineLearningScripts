@@ -55,6 +55,7 @@ evaluatePhenotype = function(phenotype) {
     testset$prob = prob
     ROC = roc(Class==1 ~ prob, data = testset, auc=TRUE)
     rocAvg = rocAvg + as.numeric(ROC["auc"])
+    detach()
   }
   
   rocAvg = rocAvg / folds
