@@ -30,14 +30,8 @@ readPhenotypes = function() {
 }
 
 attrsOfPhenotype = function(phenotype) {
-  toReturn = list()
-  for(i in 1:31) {
-    if(substr(phenotype, i, i) == "1") {
-      toReturn[length(toReturn) + 1] = attributeNames[i]
-    }
-  }
-  
-  return(toReturn)
+  genes = strsplit(phenotype, '')[[1]]
+  return(attributeNames[Filter(function(i){genes[i]=="1"}, 1:31)])
 }
 
 evaluatePhenotype = function(phenotype) {
@@ -73,20 +67,13 @@ handleColinearity = function(phenotype) {
 }
 
 handleColinearityInGeneration = function(generation) {
-  fixedGen = list()
-  for(i in 1:genSize) {
-    fixedGen[i] = handleColinearity(generation[i])
-  }
-  
-  return(fixedGen)
+  return(lapply(generation, handleColinearity))
 }
 
 evaluateGeneration = function(phenotypes) {
-  for(i in 1:length(phenotypes)) {
-    phenRoc = evaluatePhenotype(phenotypes[i])
-    bestPhenotypes[length(bestPhenotypes) + 1] = phenotypes[i]
-    bestPhenRocs[length(bestPhenRocs) + 1] = phenRoc
-  }
+  phenRocs = mclapply(phenotypes, evaluatePhenotype, mc.cores=8)
+  bestPhenotypes = c(bestPhenotypes, phenotypes)
+  bestPhenRocs = c(bestPhenRocs, phenRocs)
   
   ord = order(bestPhenRocs)
   bestPhenRocs = bestPhenRocs[ord]
