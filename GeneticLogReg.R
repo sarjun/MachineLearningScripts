@@ -2,6 +2,7 @@ library(rms)
 library(pROC)
 library(DMwR)
 library(plyr)
+library(parallel)
 
 # Constants
 phenotypesLoc = "C:/Users/Arjun/Documents/UVa/Sixth Semester/CS 6316/ResearchProject/GA/phenotypes.txt"
