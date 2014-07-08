@@ -76,7 +76,7 @@ evaluateGeneration = function(phenotypes) {
   bestPhenotypes = c(bestPhenotypes, phenotypes)
   bestPhenRocs = c(bestPhenRocs, phenRocs)
   
-  ord = order(bestPhenRocs)
+  ord = order(unlist(bestPhenRocs))
   bestPhenRocs = bestPhenRocs[ord]
   bestPhenotypes = bestPhenotypes[ord]
   bestPhenRocs = bestPhenRocs[1:genSize]
