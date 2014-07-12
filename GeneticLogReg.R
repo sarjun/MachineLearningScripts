@@ -73,14 +73,14 @@ handleColinearityInGeneration = function(generation) {
 
 evaluateGeneration = function(phenotypes) {
   phenRocs = mclapply(phenotypes, evaluatePhenotype, mc.cores=8)
-  bestPhenotypes = c(bestPhenotypes, phenotypes)
-  bestPhenRocs = c(bestPhenRocs, phenRocs)
+  bestPhenotypes <<- c(bestPhenotypes, phenotypes)
+  bestPhenRocs <<- c(bestPhenRocs, phenRocs)
   
-  ord = order(unlist(bestPhenRocs))
-  bestPhenRocs = bestPhenRocs[ord]
-  bestPhenotypes = bestPhenotypes[ord]
-  bestPhenRocs = bestPhenRocs[1:genSize]
-  bestPhenotypes = bestPhenotypes[1:genSize]
+  ord = order(unlist(bestPhenRocs), decreasing = T)
+  bestPhenRocs <<- bestPhenRocs[ord]
+  bestPhenotypes <<- bestPhenotypes[ord]
+  bestPhenRocs <<- bestPhenRocs[1:genSize]
+  bestPhenotypes <<- bestPhenotypes[1:genSize]
 }
 
 writeArchive = function() {
