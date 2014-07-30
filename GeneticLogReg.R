@@ -86,19 +86,19 @@ evaluateGeneration = function(phenotypes) {
 writeArchive = function() {
   filename = paste(archiveDir, "HallOfFame", genCount, ".txt", sep="")
   for(i in 1:genSize) {
-    write(paste(paste(i, bestPhenRocs[i], sep=": "), bestPhenotypes[i], paste(attrsOfPhenotype(bestPhenotypes[i]), collapse=", "), sep=","), file=filename, append=T)
+    write(paste(paste(i, bestPhenRocs[i], sep=": "), bestPhenotypes[i], paste(attrsOfPhenotype(bestPhenotypes[[i]]), collapse=", "), sep=","), file=filename, append=T)
   }
 }
 
 generateSelectionProb = function() {
   scores = bestPhenRocs
-  scoreSum = sum(bestPhenRocs)
+  scoreSum = sum(unlist(bestPhenRocs))
   currProb = 0
   selectionProbUpperBound = list()
   
   for(i in 1:genSize) {
-    selectionProbUpperBound[i] = scores[i]/scoreSum + currProb
-    currProb = currProb + scores[i]/scoreSum
+    selectionProbUpperBound[i] = scores[[i]]/scoreSum + currProb
+    currProb = currProb + scores[[i]]/scoreSum
   }
   
   return(selectionProbUpperBound)
